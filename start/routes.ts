@@ -12,8 +12,6 @@ import { HttpContext } from '@adonisjs/core/http'
 import { sep, normalize } from 'node:path'
 import app from '@adonisjs/core/services/app'
 import authRoute from './routes/v1/auth_route.js'
-import filesRoute from './routes/v1/files_route.js'
-import exampleRoute from './routes/v1/examples_route.js'
 import courseRoute from './routes/v1/course_route.js'
 import enrollmentRoute from './routes/v1/enrollment_route.js'
 import userProfileRoute from './routes/v1/user_profile.js'
@@ -30,13 +28,11 @@ router.get('/', async ({ response }: HttpContext) => {
 router
   .group(() => {
     authRoute()
-    filesRoute()
-    exampleRoute()
     courseRoute()
     enrollmentRoute()
     userProfileRoute()
   })
-  .prefix('/api/v1')
+  .prefix('/api/v1/myits/')
 
 router.get('/uploads/*', ({ request, response }) => {
   const filePath = request.param('*').join(sep)
