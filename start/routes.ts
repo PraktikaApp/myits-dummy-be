@@ -32,7 +32,7 @@ router
     enrollmentRoute()
     userProfileRoute()
   })
-  .prefix('/api/v1/myits/')
+  .prefix('/api/v1/')
 
 router.get('/uploads/*', ({ request, response }) => {
   const filePath = request.param('*').join(sep)

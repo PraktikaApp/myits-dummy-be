@@ -1,8 +1,6 @@
-import type { HttpContext } from '@adonisjs/core/http'
+import { type HttpContext } from '@adonisjs/core/http'
 import vine from '@vinejs/vine'
 import User from '#models/user'
-import mail from '@adonisjs/mail/services/main'
-import VerifyEmailNotification from '#mails/verify_email_notification'
 import AuthValidator from '#validators/auth'
 import messagesProvider from '#helpers/validation_messages_provider'
 
@@ -17,7 +15,6 @@ export default class AuthController {
         data.email = `${data.email}@student.its.ac.id`;
       }
 
-      console.log(data.email);
       const user = await User.verifyCredentials(data.email, data.password);
       const token = await User.accessTokens.create(user, ['*'], { expiresIn: '1 days' });
 
@@ -27,12 +24,16 @@ export default class AuthController {
           message: 'Invalid email or password.',
         });
       }
-
-      return response.ok({
-        success: true,
-        message: 'Login successful.',
-        data: token.value!.release(),
-      });
+      
+    response.cookie('auth_token', token.value!.release(), {
+        httpOnly: true,
+        secure: true,   
+        domain: '.localhost', 
+        sameSite: 'none', 
+        path: '/',
+        maxAge: 86400,
+     });
+  
     } catch (error) {
       return response.unprocessableEntity({
         success: false,
@@ -55,9 +56,7 @@ export default class AuthController {
         })
       }
       console.log(data.email);
-      const user = await User.create({ email: data.email, password: data.password })
-      await mail.send(new VerifyEmailNotification(user))
-
+      await User.create({ email: data.email, password: data.password })
       return response.ok({
         success: true,
         message: 'Please check your email inbox (and spam) for an access link.',
